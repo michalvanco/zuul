@@ -1,0 +1,6 @@
+FROM docker-registry.na.intgdc.com/gdc:R24_6
+RUN yum install -y gcc python-devel python-pip libffi-devel libjpeg-turbo-devel openssl-devel
+RUN pip install tox
+WORKDIR /zuul
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

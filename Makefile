@@ -38,3 +38,16 @@ install:
 
 clean:
 	rm -rf $(SOURCES) $(PIP_DEPS_DIR) $(VENV_DIR)
+
+# Docker targets
+
+DOCKER_IMAGE_TAG = zuul-test
+WORKDIR = $(shell pwd)
+
+docker-build:
+	docker build -t $(DOCKER_IMAGE_TAG) -f docker/Dockerfile .
+
+docker-run:
+	docker run --rm --tty --interactive \
+		--volume $(shell pwd):/zuul \
+		--env LOCAL_USER_ID=$(shell id -u) $(DOCKER_IMAGE_TAG)
