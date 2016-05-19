@@ -16,8 +16,10 @@ import logging
 import re
 from testtools.matchers import MatchesRegex
 import time
+from testtools import ExpectedException
 
 from tests.base import ZuulTestCase, random_sha1
+from zuul.exceptions import MergeFailure
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-32s '
@@ -304,6 +306,24 @@ class TestGithub(ZuulTestCase):
         self.waitUntilSettled()
         self.assertFalse(A.is_merged)
         self.fake_github.merge_failure = False
+
+    def test_report_pull_merge_not_allowed_once(self):
+        # pipeline merges the pull request on second run of merge
+        # first merge failed on 405 Method Not Allowed error
+        self.fake_github.merge_not_allowed_count = 1
+        A = self.fake_github.openFakePullRequest('org/project', 'master', 'A')
+        self.fake_github.emitEvent(A.getCommentAddedEvent('merge me'))
+        self.waitUntilSettled()
+        self.assertTrue(A.is_merged)
+
+    def test_report_pull_merge_not_allowed_twice(self):
+        # pipeline does not merge the pull request
+        # merge failed on 405 Method Not Allowed error - twice
+        self.fake_github.merge_not_allowed_count = 2
+        A = self.fake_github.openFakePullRequest('org/project', 'master', 'A')
+        self.fake_github.emitEvent(A.getCommentAddedEvent('merge me'))
+        self.waitUntilSettled()
+        self.assertFalse(A.is_merged)
 
     def test_parallel_changes(self):
         "Test that changes are tested in parallel and merged in series"
