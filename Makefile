@@ -42,7 +42,7 @@ clean:
 # Docker targets
 
 DOCKER_IMAGE_TAG = zuul-test
-WORKDIR = $(shell pwd)
+DOCKER_IMAGE_TAG_EL7 = zuul-test-el7
 
 docker-build:
 	docker build -t $(DOCKER_IMAGE_TAG) -f docker/Dockerfile .
@@ -51,3 +51,11 @@ docker-run:
 	docker run --rm --tty --interactive \
 		--volume $(shell pwd):/zuul \
 		--env LOCAL_USER_ID=$(shell id -u) $(DOCKER_IMAGE_TAG)
+
+docker-build-el7:
+	docker build -t $(DOCKER_IMAGE_TAG_EL7) -f docker/Dockerfile-el7 .
+
+docker-run-el7:
+	docker run --rm --tty --interactive \
+		--volume $(shell pwd):/zuul \
+		--env LOCAL_USER_ID=$(shell id -u) $(DOCKER_IMAGE_TAG_EL7)
