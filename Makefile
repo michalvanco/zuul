@@ -44,6 +44,8 @@ clean:
 DOCKER_IMAGE_TAG = zuul-test
 DOCKER_IMAGE_TAG_EL7 = zuul-test-el7
 
+DOCKER_USER_ID ?= $(shell id -u)
+
 docker-build:
 	docker build -t $(DOCKER_IMAGE_TAG) -f docker/Dockerfile .
 
@@ -51,7 +53,7 @@ docker-run:
 	docker run --rm --tty --interactive \
 		--ulimit nofile=1024:1024 \
 		--volume $(shell pwd):/zuul \
-		--env LOCAL_USER_ID=$(shell id -u) $(DOCKER_IMAGE_TAG)
+		--env LOCAL_USER_ID=$(DOCKER_USER_ID) $(DOCKER_IMAGE_TAG)
 
 docker-build-el7:
 	docker build -t $(DOCKER_IMAGE_TAG_EL7) -f docker/Dockerfile-el7 .
@@ -60,4 +62,4 @@ docker-run-el7:
 	docker run --rm --tty --interactive \
 		--ulimit nofile=1024:1024 \
 		--volume $(shell pwd):/zuul \
-		--env LOCAL_USER_ID=$(shell id -u) $(DOCKER_IMAGE_TAG_EL7)
+		--env LOCAL_USER_ID=$(DOCKER_USER_ID) $(DOCKER_IMAGE_TAG_EL7)
