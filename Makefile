@@ -49,6 +49,7 @@ docker-build:
 
 docker-run:
 	docker run --rm --tty --interactive \
+		--ulimit nofile=1024:1024 \
 		--volume $(shell pwd):/zuul \
 		--env LOCAL_USER_ID=$(shell id -u) $(DOCKER_IMAGE_TAG)
 
@@ -57,5 +58,6 @@ docker-build-el7:
 
 docker-run-el7:
 	docker run --rm --tty --interactive \
+		--ulimit nofile=1024:1024 \
 		--volume $(shell pwd):/zuul \
 		--env LOCAL_USER_ID=$(shell id -u) $(DOCKER_IMAGE_TAG_EL7)
